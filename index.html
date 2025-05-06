@@ -1,162 +1,91 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Idle Wizard Tech Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      font-family: sans-serif;
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .container {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    button {
-      padding: 12px 24px;
-      margin-top: 15px;
-      cursor: pointer;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      background-color: #5cb85c;
-      color: white;
-    }
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    .resource {
-      margin-bottom: 15px;
-      font-size: 1.1em;
-      display: flex; /* Added flexbox for image alignment */
-      align-items: center; /* Vertically center the image */
-      justify-content: center; /* Center horizontally */
-    }
-    .resource img {
-      width: 50px; /* Adjust as needed */
-      height: auto;
-      margin-right: 10px; /* Space between image and text */
-    }
-    #spellLearned {
-      margin-top: 15px;
-      color: gold;
-      font-weight: bold;
-      display: none;
-    }
-    hr {
-      margin: 20px 0;
-      border: 0;
-      border-top: 1px solid #eee;
-    }
-    #apprenticeCount, #passiveManaRate {
-      font-size: 0.9em;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Idle Wizard Tech Demo</h1>
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>Modified Image</title>
+ <style>
+  #imageContainer {
+  position: relative;
+  width: 500px; /* Adjust as needed */
+  height: 300px; /* Adjust as needed */
+  }
 
-    <div class="resource">
-      <img src="Assets/openart-image_Hj9tqvMD_1746529754388_raw.jpg" alt="Mana Icon">
-      <strong>Mana:</strong> <span id="manaCount">0</span>
-    </div>
+  #clickableImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Or 'fill', 'cover', etc. */
+  cursor: pointer;
+  }
 
-    <div class="resource">
-      <strong>Gold:</strong> <span id="goldCount">0</span>
-    </div>
+  #stats {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  display: none; /* Hidden by default */
+  }
 
-    <button id="gatherManaButton">Gather Mana</button>
-    <button id="studySpellButton" disabled>Study Spell (Cost: 10 Mana)</button>
-    <div id="spellLearned" style="margin-top: 10px; display: none;">✨ You learned a new spell! ✨</div>
-    <button id="castSpellButton" disabled>Cast Spell (Generates Gold)</button>
+  #progressBarContainer {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 200px; /* Adjust as needed */
+  }
 
-    <hr>
-    <p>Passive Mana Generation: <span id="passiveManaRate">0</span> per second</p>
-    <button id="hireApprenticeButton">Hire Apprentice (Cost: 20 Gold)</button>
-    <div id="apprenticeCount">Apprentices: 0</div>
+  #progressBar {
+  width: 100%;
+  height: 20px;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  }
 
+  #progressBarFill {
+  height: 100%;
+  width: 50%; /* Example value */
+  background-color: #4CAF50;
+  border-radius: 10px;
+  }
+
+  #levelIndicator {
+  position: absolute;
+  top: -25px; /* Position above the progress bar */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: bold;
+  }
+ </style>
+ </head>
+ <body>
+
+ <div id="imageContainer">
+  <img id="clickableImage" src="http://googleusercontent.com/generated_image_content/0" alt="Clickable Image" onclick="showStats()">
+
+  <div id="stats">
+  {/* Stats will appear here */}
+  <p>Mana Regen Rate: [Value]</p>
+  {/* Add more stats as needed */}
   </div>
 
-  <script>
-    let mana = 0;
-    let gold = 0;
-    let hasLearnedSpell = false;
-    let apprentices = 0;
-    let passiveManaRate = 0;
+  <div id="progressBarContainer">
+  <div id="levelIndicator">Level 10</div>
+  <div id="progressBar">
+  <div id="progressBarFill"></div>
+  </div>
+  </div>
+ </div>
 
-    const manaCountElement = document.getElementById('manaCount');
-    const goldCountElement = document.getElementById('goldCount');
-    const gatherManaButton = document.getElementById('gatherManaButton');
-    const studySpellButton = document.getElementById('studySpellButton');
-    const spellLearnedElement = document.getElementById('spellLearned');
-    const castSpellButton = document.getElementById('castSpellButton');
-    const passiveManaRateElement = document.getElementById('passiveManaRate');
-    const hireApprenticeButton = document.getElementById('hireApprenticeButton');
-    const apprenticeCountElement = document.getElementById('apprenticeCount');
+ <script>
+  function showStats() {
+  var statsDiv = document.getElementById("stats");
+  if (statsDiv.style.display === "none") {
+  statsDiv.style.display = "block";
+  } else {
+  statsDiv.style.display = "none";
+  }
+  }
+ </script>
 
-    function updateUI() {
-      manaCountElement.textContent = Math.floor(mana);
-      goldCountElement.textContent = Math.floor(gold);
-      passiveManaRateElement.textContent = passiveManaRate;
-      apprenticeCountElement.textContent = `Apprentices: ${apprentices}`;
-
-      studySpellButton.disabled = mana < 10 || hasLearnedSpell;
-      castSpellButton.disabled = !hasLearnedSpell;
-    }
-
-    gatherManaButton.addEventListener('click', () => {
-      mana += 5;
-      updateUI();
-    });
-
-    studySpellButton.addEventListener('click', () => {
-      if (mana >= 10 && !hasLearnedSpell) {
-        mana -= 10;
-        hasLearnedSpell = true;
-        spellLearnedElement.style.display = 'block';
-        updateUI();
-      }
-    });
-
-    castSpellButton.addEventListener('click', () => {
-      if (hasLearnedSpell) {
-        gold += 15;
-        updateUI();
-      }
-    });
-
-    hireApprenticeButton.addEventListener('click', () => {
-      if (gold >= 20) {
-        gold -= 20;
-        apprentices++;
-        passiveManaRate += 1;
-        updateUI();
-      }
-    });
-
-    setInterval(() => {
-      mana += passiveManaRate;
-      updateUI();
-    }, 1000);
-
-    document.addEventListener('dblclick', function(event) {
-      event.preventDefault();
-    }, { passive: false });
-
-    updateUI();
-  </script>
-</body>
-</html>
+ </body>
+ </html>
