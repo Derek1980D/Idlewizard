@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wizard Image</title>
+    <title>Wizard Display</title>
+    <style>
+        .wizard-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .wizard-img {
+            width: 200px;
+            border: 5px solid #4A90E2;
+            border-radius: 12px;
+        }
+
+        .level {
+            font-size: 1.5em;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .xp-bar-container {
+            width: 220px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+
+        .xp-bar {
+            height: 20px;
+            width: 70%; /* adjust to current XP progress */
+            background-color: #76c7c0;
+            border-radius: 8px 0 0 8px;
+        }
+    </style>
 </head>
 <body>
-    <img src="Assets/wiz1.jpg" alt="Wizard Image">
+    <div class="wizard-container">
+        <img src="Assets/wiz1.jpg" alt="Wizard Image" class="wizard-img">
+        <div class="level">Level 5</div>
+        <div class="xp-bar-container">
+            <div class="xp-bar"></div>
+        </div>
+    </div>
 </body>
 </html>
