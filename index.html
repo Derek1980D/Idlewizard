@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wizard Display</title>
+    <title>Idle Wizard Test</title>
     <style>
         .wizard-container {
             text-align: center;
@@ -30,19 +30,41 @@
 
         .xp-bar {
             height: 20px;
-            width: 70%; /* adjust to current XP progress */
+            width: 0%;
             background-color: #76c7c0;
-            border-radius: 8px 0 0 8px;
+            border-radius: 8px;
+            transition: width 0.1s linear;
         }
     </style>
 </head>
 <body>
     <div class="wizard-container">
         <img src="Assets/wiz1.jpg" alt="Wizard Image" class="wizard-img">
-        <div class="level">Level 5</div>
+        <div class="level" id="level">Level 1</div>
         <div class="xp-bar-container">
-            <div class="xp-bar"></div>
+            <div class="xp-bar" id="xpBar"></div>
         </div>
     </div>
+
+    <script>
+        let xp = 0;
+        let level = 1;
+        const xpBar = document.getElementById('xpBar');
+        const levelDisplay = document.getElementById('level');
+
+        function gameLoop() {
+            xp += 1;
+
+            if (xp >= 100) {
+                xp = 0;
+                level += 1;
+                levelDisplay.textContent = "Level " + level;
+            }
+
+            xpBar.style.width = xp + "%";
+        }
+
+        setInterval(gameLoop, 100); // Game loop runs every 100ms
+    </script>
 </body>
 </html>
