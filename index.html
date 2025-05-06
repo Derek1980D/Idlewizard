@@ -2,69 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Idle Wizard Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Idle RPG Game</title>
     <style>
-        .wizard-container {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1e1e2e;
+            color: #f8f8f2;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #counter-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        #game-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+        
+        #game-title {
+            font-size: 32px;
+            margin-bottom: 20px;
             text-align: center;
-            margin-top: 50px;
         }
-
-        .wizard-img {
+        
+        #click-area {
             width: 200px;
-            border: 5px solid #4A90E2;
-            border-radius: 12px;
+            height: 200px;
+            background-color: #6272a4;
+            border-radius: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
         }
-
-        .level {
-            font-size: 1.5em;
-            margin: 10px 0;
-            color: #333;
+        
+        #click-area:active {
+            transform: scale(0.95);
         }
-
-        .xp-bar-container {
-            width: 220px;
-            background-color: #e0e0e0;
-            border-radius: 8px;
-            margin: 0 auto;
-        }
-
-        .xp-bar {
-            height: 20px;
-            width: 0%;
-            background-color: #76c7c0;
-            border-radius: 8px;
-            transition: width 0.1s linear;
+        
+        @media (max-width: 768px) {
+            #game-title {
+                font-size: 24px;
+            }
+            
+            #counter-display {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="wizard-container">
-        <img src="Assets/wiz1.jpg" alt="Wizard Image" class="wizard-img">
-        <div class="level" id="level">Level 1</div>
-        <div class="xp-bar-container">
-            <div class="xp-bar" id="xpBar"></div>
+    <div id="game-container">
+        <div id="counter-display">Counter: 0</div>
+        
+        <div id="game-content">
+            <h1 id="game-title">Idle RPG Game</h1>
+            <div id="click-area">
+                <span>Tap/Click Me</span>
+            </div>
         </div>
     </div>
 
     <script>
-        let xp = 0;
-        let level = 1;
-        const xpBar = document.getElementById('xpBar');
-        const levelDisplay = document.getElementById('level');
-
+        // Game state
+        const gameState = {
+            counter: 0,
+            counterPerSecond: 1,
+            lastUpdateTime: Date.now(),
+            clickValue: 1
+        };
+        
+        // DOM elements
+        const counterDisplay = document.getElementById('counter-display');
+        const clickArea = document.getElementById('click-area');
+        
+        // Click/tap event handler
+        clickArea.addEventListener('click', () => {
+            gameState.counter += gameState.clickValue;
+            updateCounterDisplay();
+        });
+        
+        // Touch events for mobile
+        clickArea.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent default behavior
+        });
+        
+        // Game loop
         function gameLoop() {
-            xp += 1;
-
-            if (xp >= 100) {
-                xp = 0;
-                level += 1;
-                levelDisplay.textContent = "Level " + level;
-            }
-
-            xpBar.style.width = xp + "%";
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - gameState.lastUpdateTime) / 1000; // Convert to seconds
+            
+            // Auto increment counter based on counterPerSecond
+            gameState.counter += gameState.counterPerSecond * deltaTime;
+            
+            // Update UI
+            updateCounterDisplay();
+            
+            // Save last update time
+            gameState.lastUpdateTime = currentTime;
+            
+            // Request next frame
+            requestAnimationFrame(gameLoop);
         }
-
-        setInterval(gameLoop, 100); // Game loop runs every 100ms
+        
+        // Update counter display
+        function updateCounterDisplay() {
+            counterDisplay.textContent = `Counter: ${Math.floor(gameState.counter)}`;
+        }
+        
+        // Initialize game
+        function initGame() {
+            // Set up the initial state
+            gameState.lastUpdateTime = Date.now();
+            
+            // Start the game loop
+            requestAnimationFrame(gameLoop);
+            
+            // Prevent pinch zoom on mobile
+            document.addEventListener('touchmove', function(event) {
+                if (event.scale !== 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+        }
+        
+        // Start the game
+        window.addEventListener('load', initGame);
+        
+        // Prevent context menu on right click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Handle fullscreen
+        document.addEventListener('click', () => {
+            // Only try to go fullscreen if it's not already fullscreen
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            }
+        });
     </script>
 </body>
 </html>
