@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Idle Wizard Tech Demo</title>
+<style>
+  body { font-family: sans-serif; }
+  .container { width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; }
+  button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
+  .resource { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Idle Wizard Tech Demo</h1>
+
+    <div class="resource">
+      <strong>Mana:</strong> <span id="manaCount">0</span>
+    </div>
+
+    <div class="resource">
+      <strong>Gold:</strong> <span id="goldCount">0</span>
+    </div>
+
+    <button id="gatherManaButton">Gather Mana</button>
+    <button id="studySpellButton" disabled>Study Spell (Cost: 10 Mana)</button>
+    <div id="spellLearned" style="margin-top: 10px; display: none;">✨ You learned a new spell! ✨</div>
+    <button id="castSpellButton" disabled>Cast Spell (Generates Gold)</button>
+
+    <hr>
+    <p>Passive Mana Generation: <span id="passiveManaRate">0</span> per second</p>
+    <button id="hireApprenticeButton">Hire Apprentice (Cost: 20 Gold)</button>
+    <div id="apprenticeCount">Apprentices: 0</div>
+
+  </div>
+
+  <script>
+    let mana = 0;
+    let gold = 0;
+    let hasLearnedSpell = false;
+    let apprentices = 0;
+    let passiveManaRate = 0;
+
+    const manaCountElement = document.getElementById('manaCount');
+    const goldCountElement = document.getElementById('goldCount');
+    const gatherManaButton = document.getElementById('gatherManaButton');
+    const studySpellButton = document.getElementById('studySpellButton');
+    const spellLearnedElement = document.getElementById('spellLearned');
+    const castSpellButton = document.getElementById('castSpellButton');
+    const passiveManaRateElement = document.getElementById('passiveManaRate');
+    const hireApprenticeButton = document.getElementById('hireApprenticeButton');
+    const apprenticeCountElement = document.getElementById('apprenticeCount');
+
+    function updateUI() {
+      manaCountElement.textContent = Math.floor(mana);
+      goldCountElement.textContent = Math.floor(gold);
+      passiveManaRateElement.textContent = passiveManaRate;
+      apprenticeCountElement.textContent = `Apprentices: ${apprentices}`;
+
+      studySpellButton.disabled = mana < 10 || hasLearnedSpell;
+      castSpellButton.disabled = !hasLearnedSpell;
+    }
+
+    gatherManaButton.addEventListener('click', () => {
+      mana += 5;
+      updateUI();
+    });
+
+    studySpellButton.addEventListener('click', () => {
+      if (mana >= 10 && !hasLearnedSpell) {
+        mana -= 10;
+        hasLearnedSpell = true;
+        spellLearnedElement.style.display = 'block';
+        updateUI();
+      }
+    });
+
+    castSpellButton.addEventListener('click', () => {
+      if (hasLearnedSpell) {
+        gold += 15;
+        updateUI();
+      }
+    });
+
+    hireApprenticeButton.addEventListener('click', () => {
+      if (gold >= 20) {
+        gold -= 20;
+        apprentices++;
+        passiveManaRate += 1;
+        updateUI();
+      }
+    });
+
+    setInterval(() => {
+      mana += passiveManaRate;
+      updateUI();
+    }, 1000);
+
+    updateUI(); // Initial UI update
+  </script>
+</body>
+</html>
 
