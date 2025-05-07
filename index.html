@@ -38,6 +38,32 @@
             font-weight: bold;
         }
         
+        #fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #f8f8f2;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        #fullscreen-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        #fullscreen-btn svg {
+            margin-right: 5px;
+            width: 16px;
+            height: 16px;
+        }
+        
         #game-content {
             display: flex;
             flex-direction: column;
@@ -78,12 +104,26 @@
             #counter-display {
                 font-size: 18px;
             }
+            
+            #fullscreen-btn {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="counter-display">Counter: 0</div>
+        <button id="fullscreen-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+            </svg>
+            Fullscreen
+        </button>
         
         <div id="game-content">
             <h1 id="game-title">Idle RPG Game</h1>
@@ -99,12 +139,14 @@
             counter: 0,
             counterPerSecond: 1,
             lastUpdateTime: Date.now(),
-            clickValue: 1
+            clickValue: 1,
+            isFullscreen: false
         };
         
         // DOM elements
         const counterDisplay = document.getElementById('counter-display');
         const clickArea = document.getElementById('click-area');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
         
         // Click/tap event handler
         clickArea.addEventListener('click', () => {
@@ -115,6 +157,60 @@
         // Touch events for mobile
         clickArea.addEventListener('touchstart', (e) => {
             e.preventDefault(); // Prevent default behavior
+        });
+        
+        // Fullscreen toggle function
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                // Enter fullscreen
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+                updateFullscreenButton(true);
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    updateFullscreenButton(false);
+                }
+            }
+        }
+        
+        // Update the fullscreen button icon and text
+        function updateFullscreenButton(isFullscreen) {
+            if (isFullscreen) {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14h6v6"></path>
+                        <path d="M20 10h-6V4"></path>
+                        <path d="M14 10l7-7"></path>
+                        <path d="M3 21l7-7"></path>
+                    </svg>
+                    Exit Fullscreen
+                `;
+            } else {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                        <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                        <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                    </svg>
+                    Fullscreen
+                `;
+            }
+        }
+        
+        // Add fullscreen button event listener
+        fullscreenBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from propagating to document
+            toggleFullScreen();
+        });
+        
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', () => {
+            gameState.isFullscreen = !!document.fullscreenElement;
+            updateFullscreenButton(gameState.isFullscreen);
         });
         
         // Game loop
@@ -162,15 +258,8 @@
         // Prevent context menu on right click
         document.addEventListener('contextmenu', event => event.preventDefault());
         
-        // Handle fullscreen
-        document.addEventListener('click', () => {
-            // Only try to go fullscreen if it's not already fullscreen
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            }
-        });
+        // Remove the automatic fullscreen attempt when clicking anywhere
+        // We've replaced it with the dedicated button
     </script>
 </body>
 </html>
